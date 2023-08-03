@@ -1,0 +1,7 @@
+---
+- name: Create user
+  hosts: ubuntu_servers
+  become: yes
+
+  tasks:
+  - name: create lsger user
