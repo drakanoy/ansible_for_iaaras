@@ -1,0 +1,8 @@
+---
+ - name: Install Apache web server
+   hosts: ubuntu_servers
+   become: true
+
+   tasks:
+   - name: UnInstall Apache webServer
+     apt : name=apache2 state=absent

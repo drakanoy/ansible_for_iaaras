@@ -1,0 +1,13 @@
+---
+- name: Debag Tests!!!
+  hosts: ubuntu_servers
+  become: yes
+
+  vars:
+    massage1: hello
+
+
+  tasks:
+  - debug: var=ansible_distribution
+
+  - debug: var=ansible_os_famely

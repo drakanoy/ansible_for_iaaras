@@ -1,0 +1,30 @@
+---
+- name: Reboot my servers and create log file
+  hosts: ubuntu_servers
+  become: yes
+
+  vars: 
+   mytext: "text for logs"
+ 
+  tasks:
+  - name: Create log file
+#    shell: echo {{ mytext }}
+    shell: echo {{ owner }} create this log text 1, node name is {{ ansible_nodename }} >> ./ansible/log.txt
+    delegate_to: localhost
+
+  - name: reboot my servers
+    shell: sleep 5 && shutdown -r now
+    async: 1
+    poll: 0
+
+  - name: Wait till my servers will come up online
+    wait_for:
+        host: "{{ inventory_hostname }}"
+        state: started
+        delay: 5
+        timeout: 60
+    delegate_to: 127.0.0.1
+
+  - name: Create log file
+    shell: echo {{ owner }} create this log text 2, node name is {{ ansible_nodename }} >> ./ansible/log.txt
+    delegate_to: 127.0.0.1

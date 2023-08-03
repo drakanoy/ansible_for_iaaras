@@ -1,0 +1,11 @@
+---
+ - name: Install Apache web server
+   hosts: ubuntu_servers
+   become: yes
+
+   tasks:
+   - name: Install Apache webServer
+     apt : name=apache2 state=latest
+
+   - name: Stop Apache and Enable in on the every boot
+     service: name=apache2 state=stopped enabled=no

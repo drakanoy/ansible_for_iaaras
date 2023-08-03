@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<TITLE>ADV-IT</TITLE>
+<SCRIPT LANGUAGE="JavaScript">
+var sizes = new Array(0, 1, 2, 4, 8, 10, 12);
+sizes.pos = 0;
+
+function Elastic() {
+   var el = document.all.elastic;
+
+   if (null == el.direction)
+      el.direction = 1;
+   else if ((sizes.pos > sizes.length - 2) || (0 == sizes.pos))
+      el.direction *= -1;
+   el.style.letterSpacing = sizes[sizes.pos += el.direction] + 'px';
+
+   setTimeout(Elastic, 100);
+}
+</SCRIPT>
+<BODY bgcolor="black" onLoad=Elastic()>
+<CENTER>
+<br><br><br><br>
+<br><br><br><br>
+<font color="green"><h2>This Web Server Build by</h2>
+<font color="gold"><H1 ID="elastic" ALIGN="Center">ANSIBLE!!</H1>
+<img src="./1.png"><br>
+<font color="gold">Owner this server is {{ owner }}<br>
+<font color="gold">server host name: {{ ansible_hostname }}<br>
+<font color="gold">server os family is: {{ ansible_os_family }}<br>
+<font color="gold">ip address is: {{ ansible_default_ipv4.address }}<br>
+<font color="gold">русский язык<br>
+</body>
+</HTML>
