@@ -7,16 +7,32 @@
     spisok: "{{ lookup('file', './spisok.txt') }}"
 
   tasks:
-    - name: create users
-      user:
-        name: "{{ item.key }}"
-        password: $6$PSLmFNvkL3BgQi6N$wLQFQ0wP0N/WJpFPOPJGAFuv0njKumRW3slcgUA4/ygog0VMcLPXND1LuSEUe1hkFCAkabNI3LPvD.hbYjbAB1
-        shell: /bin/bash
-        groups: adm, cdrom, sudo, dip, plugdev, lxd
-        append: true
-      with_dict: "{{ spisok }}"
+    - name: Create group forecast
+      group:
+        name: forecast
+        state: present
 
-    - name:
+    - name: Create users and append ssh-keys
+      block:
+        - debug:
+            msg: "{{ item }}"
+        - debug:
+            msg: "{{ item }}"
+      #        - name: Check user
+      #          shell: cd /home/{{ item.key }}
+      #          register: check_user
+      #
+      #        - name: Create users
+      #          user:
+      #            name: "{{ item.key }}"
+      #            password: $6$GMAe27If69AcCRFr$ZZMK958ZGzAoNgxyD/14qS5sf.uT6yIXOCHjy0jX05HrN/X4pGJn6bbF0.Iobad1vLeoaaPsjX9q3m6m3TS.w1
+      #            shell: /bin/bash
+      #            groups: sudo, forecast
+      #            append: true
+      #          when: no check_user | bool
+      with_dick: "{{ spisok }}"
+
+    - name: add ssh-key
       authorized_key:
         user: "{{ item.key }}"
         state: present
