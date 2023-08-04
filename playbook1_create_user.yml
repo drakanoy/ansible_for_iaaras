@@ -4,4 +4,19 @@
   become: yes
 
   tasks:
-  - name: create lsger user
+  - name: create user2 user
+    user:
+      name: user2
+      password: $6$PSLmFNvkL3BgQi6N$wLQFQ0wP0N/WJpFPOPJGAFuv0njKumRW3slcgUA4/ygog0VMcLPXND1LuSEUe1hkFCAkabNI3LPvD.hbYjbAB1
+      shell: /bin/bash
+      groups: wheel
+      append: true
+
+  - debug:
+      msg: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+#  - name: add ssh_key
+#    authorized_key:
+#      user: user2
+#      state: present
+#      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
