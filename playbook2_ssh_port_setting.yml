@@ -1,0 +1,13 @@
+---
+- name: Ssh port setting
+  hosts: ubuntu_servers
+  become: true
+
+  vars:
+    new_port: 8823
+
+  tasks:
+    - name: port change locally
+      # lineinfile: dest={{ inventory_file }} regexp='^{{ inventory_hostname }}.*' line='{{ inventory_hostname }} ansible_ssh_port={{ new_port }}' state=present
+      set_fact: ansible_ssh_port={{ new_port }}
+    - ping:
