@@ -1,3 +1,3 @@
 from crypt import crypt
 
-print(crypt(''))
+print(crypt('zxcft67'))

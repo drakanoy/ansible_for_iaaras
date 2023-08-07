@@ -12,25 +12,9 @@
         name: forecast
         state: present
 
-    - name: Create users and append ssh-keys
-      block:
-        - debug:
-            msg: "{{ item }}"
-        - debug:
-            msg: "{{ item }}"
-      #        - name: Check user
-      #          shell: cd /home/{{ item.key }}
-      #          register: check_user
-      #
-      #        - name: Create users
-      #          user:
-      #            name: "{{ item.key }}"
-      #            password: $6$GMAe27If69AcCRFr$ZZMK958ZGzAoNgxyD/14qS5sf.uT6yIXOCHjy0jX05HrN/X4pGJn6bbF0.Iobad1vLeoaaPsjX9q3m6m3TS.w1
-      #            shell: /bin/bash
-      #            groups: sudo, forecast
-      #            append: true
-      #          when: no check_user | bool
-      with_dick: "{{ spisok }}"
+    - name: Check and create users
+      include_tasks: auxiliary/playbook1_1check_user.yml
+      with_dict: "{{ spisok }}"
 
     - name: add ssh-key
       authorized_key:

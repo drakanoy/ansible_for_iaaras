@@ -1,0 +1,16 @@
+---
+- name: Create users and append ssh-keys
+  block:
+    - name: Check user
+      shell: cd /home/{{ item.key }}
+      register: check_user
+      ignore_errors: true
+
+    - name: Create users
+      user:
+        name: "{{ item.key }}"
+        password: $6$yB4XgU2cBPb6kEfD$aY01cqh4kJcyj0hW7RJCR1ObqZ6FsFexyeGBtNO3IaL/Wzxs6ALULIBVIu6uYtwA8jFV.h4pNXhOrNgsYLr2F1
+        shell: /bin/bash
+        groups: sudo, forecast
+        append: true
+      when:  check_user.rc != 0
