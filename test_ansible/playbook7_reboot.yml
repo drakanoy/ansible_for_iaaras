@@ -9,7 +9,7 @@
   tasks:
   - name: Create log file
 #    shell: echo {{ mytext }}
-    shell: echo {{ owner }} create this log text 1, node name is {{ ansible_nodename }} >> ./ansible/log.txt
+    shell: echo {{ owner }} create this log text 1, node name is {{ ansible_nodename }} # >> ./ansible/log.txt
     delegate_to: localhost
 
   - name: reboot my servers
@@ -23,8 +23,12 @@
         state: started
         delay: 5
         timeout: 60
+    register: ssh_checks
     delegate_to: 127.0.0.1
 
+  - debug:
+      msg: "{{ssh_checks}}"
+
   - name: Create log file
-    shell: echo {{ owner }} create this log text 2, node name is {{ ansible_nodename }} >> ./ansible/log.txt
+    shell: echo {{ owner }} create this log text 2, node name is {{ ansible_nodename }} # >> ./ansible/log.txt
     delegate_to: 127.0.0.1
