@@ -1,0 +1,27 @@
+---
+- name: Install base package
+  hosts: Ubuntu1
+  become: true
+
+  tasks:
+    - name: Install base package
+      apt:
+        update_cache: true
+        name: '{{ item }}'
+        state: latest
+      loop:
+        - tmux
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add the GPG key for the official Docker repository
+      shell: 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -'
+
+    - name: Add Docker Repository to APT Sources
+      shell: 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" --yes'
+
+    - name: Install doker
+      apt:
+        name: docker-ce
