@@ -2,45 +2,24 @@
 - name: Ssh port setting
   hosts: Ubuntu1
   become: true
-  gather_facts: false
 
   vars:
     new_port: 8822
-    list_of_ssh_ports: [ 22, "{{ new_port }}" ]
 
   tasks:
-    - name: Test ssh on port
-      # set_fact: ansible_ssh_port="{{ item }}"
-      include_tasks: auxiliary/playbook2_2check_port.yml
-      # wait_for:
-      #   timeout: 10
-      #   host: "{{ inventory_hostname }}"
-      register: ssh_checks
-      with_items: "{{list_of_ssh_ports}}"
-      ignore_errors: true
-      # delegate_to: 127.0.0.1
-
-    - name: нужный name
-      debug:
-        var: ssh_port_true
-
-    - name: Set available ansible_ssh_port
-      set_fact: ansible_ssh_port={{ item.item }}
-      when: ssh_checks is defined and item.elapsed < 10
-      with_items: "{{ssh_checks.results}}"
-
     - name: Port change
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^#Port*'
-        line: 'Port 8822'
+        line: 'Port {{ new_port }}'
         state: present
-      # set_fact: ansible_ssh_port={{ new_port }}
 
     - name: Reboot my servers
       shell: sleep 5 && shutdown -r now
       async: 1
       poll: 0
+
+    - set_fact: ansible_ssh_port={{ new_port }}
 
     - name: Wait till my servers will come up online
       wait_for:

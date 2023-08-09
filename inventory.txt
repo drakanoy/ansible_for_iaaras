@@ -2,7 +2,7 @@
 localhost ansible_host=127.0.0.1 owner=master
 
 [ubuntu_servers]
-Ubuntu1  ansible_host=172.20.142.170 owner=ubuntu1
-Ubuntu2  ansible_host=172.20.142.150 owner=ubuntu2
-Ubuntu3  ansible_host=172.20.142.172 owner=ubuntu3
+Ubuntu1  ansible_host=172.20.142.170 owner=ubuntu1 # ansible_ssh_port=8822
+Ubuntu2  ansible_host=172.20.142.150 owner=ubuntu2 ansible_ssh_port=22
+Ubuntu3  ansible_host=172.20.142.172 owner=ubuntu3 ansible_ssh_port=22
 
