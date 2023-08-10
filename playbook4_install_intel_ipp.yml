@@ -21,3 +21,4 @@
 
     - name: Install Intel IPP
       shell: 'sh ./intel/l_ipp_oneapi_p_2021.8.0.46345_offline.sh -a -s --eula accept'
+      # ./intel/l_BaseKit_p_2023.1.0.46401_offline.sh -a -s --eula accept
