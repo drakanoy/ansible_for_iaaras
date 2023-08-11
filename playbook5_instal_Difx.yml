@@ -1,0 +1,49 @@
+---
+- name: Install Difx correlator
+  hosts: Ubuntu1
+  become: true
+
+  vars:
+    group: forecast
+
+  tasks:
+    - name: Install additional packages
+      apt:
+        update_cache: true
+        name: '{{ item }}'
+        state: latest
+      loop:
+        - subversion
+        - build-essential
+        - python
+        - autotools-dev
+        - autoconf
+        - libtool
+        - libfftw3-dev
+        - pkg-config
+        - libexpat1-dev
+        - openmpi-bin
+        - libgsl-dev
+        - bison
+        - flex-old
+        - pgplot5
+        - doxygen
+
+    - name: Create directory for installer
+      file:
+        path: /difx
+        state: directory
+        mode: 0775
+    #    owner: '{{ ansible_user }}'
+        group: '{{ group }}
+
+    - name: Install subversion Difx
+      subversion:
+        repo: https://svn.atnf.csiro.au/difx/master_tags/DiFX-2.6.2
+        dest: /difx
+      register: results
+
+    - debug:
+        var: results
+
+    # - name: продолжение

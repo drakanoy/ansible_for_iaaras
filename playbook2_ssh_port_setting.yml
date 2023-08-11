@@ -7,7 +7,7 @@
     new_port: 8822
 
   tasks:
-    - name: Port change
+    - name: Port change. New port is {{ new_port }}
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^#Port*'

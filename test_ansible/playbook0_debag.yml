@@ -8,6 +8,7 @@
 
 
   tasks:
-  - debug: var=ansible_distribution
+  - name: massage - {{ massage1 }}
+    debug: var=ansible_distribution
 
   - debug: var=ansible_os_famely

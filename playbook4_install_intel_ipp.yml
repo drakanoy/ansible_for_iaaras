@@ -1,24 +1,27 @@
 ---
-- name: Install base package
+- name: Install Intel IPP
   hosts: Ubuntu1
   become: true
+
+  vars:
+    group: forecast
 
   tasks:
     - name: Create directory for installer
       file:
-        path: ./intel
+        path: /intel
         state: directory
         mode: 0775
     #    owner: '{{ ansible_user }}'
-    #    group: '{{ ansible_user }}'
+        group: '{{ group }}'
 
     - name: Download installer
       get_url:
-        dest: ./intel
+        dest: /intel
         url: https://pub.s3.iaaras.ru/l_ipp_oneapi_p_2021.8.0.46345_offline.sh
         # https://registrationcenter-download.intel.com/akdlm/IRC_NAS/7deeaac4-f605-4bcf-a81b-ea7531577c61/l_BaseKit_p_2023.1.0.46401_offline.sh
         # если хотим полную версию Intel OneApi
 
     - name: Install Intel IPP
-      shell: 'sh ./intel/l_ipp_oneapi_p_2021.8.0.46345_offline.sh -a -s --eula accept'
-      # ./intel/l_BaseKit_p_2023.1.0.46401_offline.sh -a -s --eula accept
+      shell: 'sh /intel/l_ipp_oneapi_p_2021.8.0.46345_offline.sh -a -s --eula accept'
+      # /intel/l_BaseKit_p_2023.1.0.46401_offline.sh -a -s --eula accept

@@ -5,11 +5,12 @@
 
   vars:
     spisok: "{{ lookup('file', './spisok.txt') }}"
+    group: forecast
 
   tasks:
-    - name: Create group forecast
+    - name: Create group {{ group }}
       group:
-        name: forecast
+        name: '{{ group }}'
         state: present
 
     - name: Check and create users
