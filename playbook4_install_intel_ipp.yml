@@ -5,6 +5,7 @@
 
   vars:
     group: forecast
+    user: user1  # lsger
 
   tasks:
     - name: Create directory for installer
@@ -12,7 +13,7 @@
         path: /intel
         state: directory
         mode: 0775
-    #    owner: '{{ ansible_user }}'
+        owner: '{{ user }}'
         group: '{{ group }}'
 
     - name: Download installer

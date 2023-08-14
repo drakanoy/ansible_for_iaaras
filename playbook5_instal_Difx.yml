@@ -1,21 +1,23 @@
 ---
 - name: Install Difx correlator
-  hosts: Ubuntu1
+  hosts: Ubuntu3
   become: true
 
   vars:
     group: forecast
+    user: user1  # lsger
 
   tasks:
     - name: Install additional packages
       apt:
-        update_cache: true
+        # update_cache: true
         name: '{{ item }}'
         state: latest
       loop:
         - subversion
         - build-essential
-        - python
+        - python3
+        - python-is-python3
         - autotools-dev
         - autoconf
         - libtool
@@ -34,16 +36,16 @@
         path: /difx
         state: directory
         mode: 0775
-    #    owner: '{{ ansible_user }}'
-        group: '{{ group }}
+        owner: '{{ user }}'
+        group: '{{ group }}'
 
-    - name: Install subversion Difx
-      subversion:
-        repo: https://svn.atnf.csiro.au/difx/master_tags/DiFX-2.6.2
-        dest: /difx
-      register: results
+#    - name: Install subversion Difx
+#      subversion:
+#        repo: https://svn.atnf.csiro.au/difx/master_tags/DiFX-2.6.2
+#        dest: /difx
+#      register: results
 
-    - debug:
-        var: results
+#    - debug:
+#        var: results
 
-    # - name: продолжение
+#     - name: продолжение
