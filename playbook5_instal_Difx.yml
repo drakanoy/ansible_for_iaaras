@@ -30,6 +30,10 @@
         - flex-old
         - pgplot5
         - doxygen
+        - libopenmpi-dev
+        - hwloc
+        - libevent-dev
+
 
     - name: Create directory for installer
       file:
