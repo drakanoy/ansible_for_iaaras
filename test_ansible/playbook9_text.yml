@@ -1,0 +1,28 @@
+---
+- name: test text
+  hosts: Ubuntu1
+  become: true
+
+  tasks:
+    - name: test text
+      lineinfile:
+        dest: /home/user1/text.txt
+        regexp: '^test3*'
+        line: 'test2'
+        state: present
+
+    - name: test directory
+      file:
+        path: /test1/test1
+        state: directory
+        mode: 0775
+        owner: root
+        group: root
+
+    - name: test directory
+      file:
+        path: /test1/test2/touch.txt
+        state: touch
+        mode: 0775
+        owner: root
+        group: root

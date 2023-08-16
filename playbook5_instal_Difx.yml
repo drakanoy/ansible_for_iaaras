@@ -1,6 +1,6 @@
 ---
 - name: Install Difx correlator
-  hosts: Ubuntu3
+  hosts: Ubuntu1
   become: true
 
   vars:
@@ -10,7 +10,7 @@
   tasks:
     - name: Install additional packages
       apt:
-        # update_cache: true
+        update_cache: true
         name: '{{ item }}'
         state: latest
       loop:
@@ -37,19 +37,97 @@
 
     - name: Create directory for installer
       file:
-        path: /difx
+        path: /difx/DiFX-2.6.2
         state: directory
         mode: 0775
         owner: '{{ user }}'
         group: '{{ group }}'
 
-#    - name: Install subversion Difx
-#      subversion:
-#        repo: https://svn.atnf.csiro.au/difx/master_tags/DiFX-2.6.2
-#        dest: /difx
-#      register: results
+    - name: Install subversion Difx
+      shell: 'svn co https://svn.atnf.csiro.au/difx/master_tags/DiFX-2.6.2 /difx/DiFX-2.6.2'
+      register: results
 
-#    - debug:
-#        var: results
+    - debug:
+        var: results
 
-#     - name: продолжение
+    - name: Create ipp.pc
+      shell: 'cd /difx/DiFX-2.6.2/ && /difx/DiFX-2.6.2/genipppc /opt/intel/oneapi/ipp/2021.8.0'
+      register: results
+
+    - debug:
+        var: results
+
+    - name: Create directory for ipp.cp
+      file:
+        path: /usr/local/difx/lib/pkgconfig
+        state: directory
+        mode: 0775
+        owner: '{{ user }}'
+        group: '{{ group }}'
+
+    - name: Copy ipp.pc
+      copy:
+        src: /difx/DiFX-2.6.2/ipp.pc
+        dest: /usr/local/difx/lib/pkgconfig
+        remote_src: true
+        mode: 0775
+        owner: '{{ user }}'
+        group: '{{ group }}'
+
+    - name: Adding environment variables for installation
+      block:
+        - lineinfile:
+            dest: /etc/environment
+            line: 'DIFXROOT="/usr/local/difx"'
+            state: present
+
+        - lineinfile:
+            dest: /etc/environment
+            line: 'PKG_CONFIG_PATH="/usr/local/difx/lib/pkgconfig"'
+            state: present
+
+        - lineinfile:
+            dest: /etc/environment
+            line: 'MPICXX="/usr/bin/mpicxx"'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/libraries/mark6sg/configure.ac
+            regexp: '^AC_CONFIG_MACRO_DIR([m4])*'
+            line: '#AC_CONFIG_MACRO_DIR([m4])'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ipps.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ipps.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ippvm.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippvm.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippcore.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ippversion.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippversion.h>'
+            state: present
+
+    - name: Install DiFX
+      shell:
+        chdir: /difx/DiFX-2.6.2/
+        executable: /bin/bash
+        cmd: 'source /difx/DiFX-2.6.2/setup.bash && /difx/DiFX-2.6.2/install-difx'
+      register: results
+
+    - debug:
+        msg: 'Installation successful'
+      when: '"finished...\nDone!" in results.stdout'
