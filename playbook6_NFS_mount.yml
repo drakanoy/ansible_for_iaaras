@@ -1,0 +1,38 @@
+---
+- name: Mount NFS disk
+  hosts: Ubuntu1
+  become: true
+
+  vars:
+    group: forecast
+    user: user1  # lsger
+
+  tasks:
+    - name: Install nfs-common package
+      apt:
+        update_cache: true
+        name: nfs-common
+        state: latest
+
+    - name: Create mount directory
+      file:
+        path: /mnt/prognoz-nas/data
+        state: directory
+        mode: 0775
+        owner: '{{ user }}'
+        group: '{{ group }}'
+
+    - name: Mount NFS disk
+      ansible.posix.mount:
+        src: 172.20.180.10:/zdata
+        path: /mnt/prognoz-nas/data
+        boot: true
+        state: mounted
+        fstype: nfs
+
+    - name: add comment to disk mount
+      lineinfile:
+        dest: /etc/fstab
+        line: "#NFS prognoz-nas"
+        insertbefore: '^172.20.180.10:/zdata*'
+        state: present
