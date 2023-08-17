@@ -22,7 +22,7 @@
         url: https://pub.s3.iaaras.ru/l_ipp_oneapi_p_2021.8.0.46345_offline.sh
         # https://registrationcenter-download.intel.com/akdlm/IRC_NAS/7deeaac4-f605-4bcf-a81b-ea7531577c61/l_BaseKit_p_2023.1.0.46401_offline.sh
         # если хотим полную версию Intel OneApi
-        # вся информация о новых версиях тут
+        # вся информация о новых версиях тут fuf
         # https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#base-kit
 
     - name: Install Intel IPP
