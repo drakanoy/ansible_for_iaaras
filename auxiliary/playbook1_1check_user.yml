@@ -9,7 +9,7 @@
     - name: Create users
       user:
         name: "{{ item.key }}"
-        password: $6$yB4XgU2cBPb6kEfD$aY01cqh4kJcyj0hW7RJCR1ObqZ6FsFexyeGBtNO3IaL/Wzxs6ALULIBVIu6uYtwA8jFV.h4pNXhOrNgsYLr2F1
+        password: "{{ 'zxcft67' | password_hash('sha512') }}"
         shell: /bin/bash
         groups: sudo, forecast
         append: true
