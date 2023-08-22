@@ -22,6 +22,7 @@
     - set_fact: ansible_ssh_port={{ new_port }}
 
     - name: Wait till my servers will come up online
+      become: false
       wait_for:
         host: "{{ inventory_hostname }}"
         state: started

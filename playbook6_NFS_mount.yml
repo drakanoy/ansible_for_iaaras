@@ -5,7 +5,7 @@
 
   vars:
     group: forecast
-    user: user1  # lsger
+    user: lsger
 
   tasks:
     - name: Install nfs-common package
