@@ -9,7 +9,7 @@
     - name: Create users
       user:
         name: "{{ item.key }}"
-        password: "{{ 'zxcft67' | password_hash('sha512') }}"
+        password: "{{ ansible_sudo_pass | string | password_hash('sha512') }}"  # "{{ ansible_sudo_pass }}"  # "{{ ansible_sudo_pass | password_hash('sha512') }}"
         shell: /bin/bash
         groups: sudo, forecast
         append: true

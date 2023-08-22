@@ -5,7 +5,7 @@
 
   vars:
     group: forecast
-    user: user1  # lsger
+    user: lsger
 
   tasks:
     - name: Create directory for installer
@@ -32,5 +32,9 @@
       register: results
 
     - debug:
-        msg: "Intel IPP is already installed"
+        msg: "Intel IPP is already installed. v=2021.8.0"
       when: '"It is already installed." in results.stdout'
+
+    - debug:
+        msg: "Installation has successfully completed. v=2021.8.0"
+      when: '"Installation has successfully completed" in results.stdout'
