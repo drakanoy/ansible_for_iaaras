@@ -1,6 +1,6 @@
 ---
 - name: Install base package
-  hosts: Ubuntu1
+  hosts: ubuntu_servers
   become: true
 
   tasks:

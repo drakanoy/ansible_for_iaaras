@@ -1,6 +1,6 @@
 ---
 - name: Ssh port setting
-  hosts: Ubuntu1
+  hosts: ubuntu_servers
   become: true
 
   vars:
@@ -14,14 +14,14 @@
         line: 'Port {{ new_port }}'
         state: present
 
-    - name: Reboot my servers
+    - name: Reboot servers
       shell: sleep 5 && shutdown -r now
       async: 1
       poll: 0
 
     - set_fact: ansible_ssh_port={{ new_port }}
 
-    - name: Wait till my servers will come up online
+    - name: Wait till servers will come up online
       become: false
       wait_for:
         host: "{{ inventory_hostname }}"

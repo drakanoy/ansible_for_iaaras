@@ -1,16 +1,16 @@
 ---
 - name: Install Difx correlator
-  hosts: Ubuntu1
+  hosts: ubuntu_servers
   become: true
 
   vars:
     group: forecast
-    user: lsger
+    user: user1
 
   tasks:
     - name: Install additional packages
       apt:
-        update_cache: true
+#        update_cache: true
         name: '{{ item }}'
         state: latest
       loop:
@@ -33,6 +33,8 @@
         - libopenmpi-dev
         - hwloc
         - libevent-dev
+        - dos2unix
+        - python2
 
 
     - name: Create directory for installer
@@ -131,3 +133,85 @@
     - debug:
         msg: 'Installation successful'
       when: '"finished...\nDone!" in results.stdout'
+
+    - name: Adjusting files to run DiFX
+      block:
+        - lineinfile:
+            dest: /usr/local/difx/bin/startdifx
+            line: '# -*- coding: utf-8 -*-'
+            insertafter: '^#!/usr/bin/env python2'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            line: '# -*- coding: utf-8 -*-'
+            insertafter: '^#!/usr/bin/env python2'
+            state: present
+
+        - file:
+            path: /difx/DiFX-2.6.2/local_settings
+            state: touch
+            mode: 0664
+            owner: '{{ user }}'
+            group: '{{ group }}'
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/local_settings
+            line: 'version = 1'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.6.2/local_settings
+            line: '{{ ansible_nodename }}, 2, 8'
+            state: present
+
+        - lineinfile:
+            dest: /etc/environment
+            line: 'DIFX_MACHINES="/difx/DiFX-2.6.2/local_settings"'
+            state: present
+
+        - file:
+            path: /usr/local/bin/runmpifxcorr.DiFX-2.6.2
+            state: touch
+            mode: 0775
+            owner: '{{ user }}'
+            group: '{{ group }}'
+
+        - lineinfile:
+            dest: /usr/local/bin/runmpifxcorr.DiFX-2.6.2
+            line: '#!/bin/bash'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/bin/runmpifxcorr.DiFX-2.6.2
+            line: 'source /difx/DiFX-2.6.2/setup.bash'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/bin/runmpifxcorr.DiFX-2.6.2
+            line: 'mpifxcorr $@'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^    difxinputs.append(open(filename)$'
+            line: '    difxinputs.append(open(filename, "rb"))'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^            for j in range(nchan[i]):$'
+            line: '            for j in range(int(nchan[i])):'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^            for j in range(nchan[0]):$'
+            line: '            for j in range(int(nchan[0])):'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^            buffer = difxinputs[i].read(8*nchan[i])$'
+            line: '            buffer = difxinputs[i].read(8*int(nchan[i]))'
+            state: present

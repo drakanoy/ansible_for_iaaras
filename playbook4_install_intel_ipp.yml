@@ -1,6 +1,6 @@
 ---
 - name: Install Intel IPP
-  hosts: Ubuntu1
+  hosts: ubuntu_servers
   become: true
 
   vars:

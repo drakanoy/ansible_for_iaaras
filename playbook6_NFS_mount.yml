@@ -1,6 +1,6 @@
 ---
 - name: Mount NFS disk
-  hosts: Ubuntu1
+  hosts: ubuntu_servers
   become: true
 
   vars:
