@@ -194,24 +194,24 @@
 
         - lineinfile:
             dest: /usr/local/difx/bin/diffDiFX.py
-            regexp: '^    difxinputs.append(open(filename)$'
+            regexp: '^    difxinputs.append\(open\(filename\)\)$'
             line: '    difxinputs.append(open(filename, "rb"))'
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/diffDiFX.py
-            regexp: '^            for j in range(nchan[i]):$'
+            regexp: '^            for j in range\(nchan\[i\]\):$'
             line: '            for j in range(int(nchan[i])):'
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/diffDiFX.py
-            regexp: '^            for j in range(nchan[0]):$'
+            regexp: '^            for j in range\(nchan\[0\]\):$'
             line: '            for j in range(int(nchan[0])):'
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/diffDiFX.py
-            regexp: '^            buffer = difxinputs[i].read(8*nchan[i])$'
+            regexp: '^            buffer = difxinputs\[i\].read\(8[*]nchan\[i\]\)$'
             line: '            buffer = difxinputs[i].read(8*int(nchan[i]))'
             state: present
