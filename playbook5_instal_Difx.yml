@@ -5,7 +5,7 @@
 
   vars:
     group: forecast
-    user: user1
+    user: lsger
 
   tasks:
     - name: Install additional packages
