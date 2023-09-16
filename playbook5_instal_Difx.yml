@@ -215,3 +215,33 @@
             regexp: '^            buffer = difxinputs\[i\].read\(8[*]nchan\[i\]\)$'
             line: '            buffer = difxinputs[i].read(8*int(nchan[i]))'
             state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^        return threads$'
+            line: "            with open(basename + 'machines', 'r') as file:"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^        return threads$'
+            line: "                a = file.readlines().count(hostname+'\n')"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^        return threads$'
+            line: "            with open(basename + 'machines', 'a') as file_write:"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^        return threads$'
+            line: "                for _ in range(node.threads - a):"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^        return threads$'
+            line: "                    file_write.write(hostname+'\n')"
+            state: present
