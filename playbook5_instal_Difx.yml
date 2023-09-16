@@ -218,30 +218,30 @@
 
         - lineinfile:
             dest: /usr/local/difx/bin/genmachines
-            insertbefore: '^        return threads$'
+            insertbefore: '^\sreturn threads$'
             line: "            with open(basename + 'machines', 'r') as file:"
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/genmachines
-            insertbefore: '^        return threads$'
-            line: "                a = file.readlines().count(hostname+'\n')"
+            insertbefore: '^\sreturn threads$'
+            line: "                a = file.readlines().count(node.name+'\\n')"
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/genmachines
-            insertbefore: '^        return threads$'
+            insertbefore: '^\sreturn threads$'
             line: "            with open(basename + 'machines', 'a') as file_write:"
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/genmachines
-            insertbefore: '^        return threads$'
-            line: "                for _ in range(node.threads - a):"
+            insertbefore: '^\sreturn threads$'
+            line: "                for _ in range(node.threads - a + len(difxmachines.getComputeNodes()) - 1):"
             state: present
 
         - lineinfile:
             dest: /usr/local/difx/bin/genmachines
-            insertbefore: '^        return threads$'
-            line: "                    file_write.write(hostname+'\n')"
+            insertbefore: '^\sreturn threads$'
+            line: "                    file_write.write(node.name+'\\n')"
             state: present
