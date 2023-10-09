@@ -1,0 +1,279 @@
+---
+- name: Install Difx correlator
+  hosts: ubuntu_servers
+  become: true
+
+  vars:
+    group: forecast
+    user: lsger
+
+  tasks:
+    - name: Install additional packages
+      apt:
+#        update_cache: true
+        name: '{{ item }}'
+        state: latest
+      loop:
+        - subversion
+        - build-essential
+        - python3
+        - python-is-python3
+        - autotools-dev
+        - autoconf
+        - libtool
+        - libfftw3-dev
+        - pkg-config
+        - libexpat1-dev
+        - openmpi-bin
+        - libgsl-dev
+        - bison
+        - flex-old
+        - pgplot5
+        - doxygen
+        - libopenmpi-dev
+        - hwloc
+        - libevent-dev
+        - dos2unix
+        - python2
+
+
+    - name: Create directory for installer
+      file:
+        path: /difx/DiFX-2.8.1
+        state: directory
+        mode: 0775
+        owner: '{{ user }}'
+        group: '{{ group }}'
+
+    - name: Install subversion Difx
+      shell: 'svn co https://svn.atnf.csiro.au/difx/master_tags/DiFX-2.8.1 /difx/DiFX-2.8.1'
+      register: results
+
+    - debug:
+        var: results
+
+    - name: Create ipp.pc
+      shell: 'cd /difx/DiFX-2.8.1/ && /difx/DiFX-2.8.1/genipppc /opt/intel/oneapi/ipp/2021.8.0'
+      register: results
+
+    - debug:
+        var: results
+
+    - name: Create directory for ipp.pc
+      file:
+        path: /usr/local/difx/lib/pkgconfig
+        state: directory
+        mode: 0775
+        owner: '{{ user }}'
+        group: '{{ group }}'
+
+    - name: Copy ipp.pc
+      copy:
+        src: /difx/DiFX-2.8.1/ipp.pc
+        dest: /usr/local/difx/lib/pkgconfig
+        remote_src: true
+        mode: 0775
+        owner: '{{ user }}'
+        group: '{{ group }}'
+
+    - name: Adding environment variables for installation
+      block:
+        - lineinfile:
+            dest: /etc/environment
+            line: 'DIFXROOT="/usr/local/difx"'
+            state: present
+
+        - lineinfile:
+            dest: /etc/environment
+            line: 'PKG_CONFIG_PATH="/usr/local/difx/lib/pkgconfig"'
+            state: present
+
+        - lineinfile:
+            dest: /etc/environment
+            line: 'MPICXX="/usr/bin/mpicxx"'
+            state: present
+
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ipps.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ipps.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ippvm.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippvm.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippcore.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/mpifxcorr/src/architecture.h.in
+            regexp: '^#include <ippversion.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippversion.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/libraries/vdifio/utils/generateVDIF.c
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippcore.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/libraries/vdifio/utils/generateVDIF.c
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ipps.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/libraries/vdifio/utils/vdifSwapSideband.c
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippcore.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/libraries/vdifio/utils/vdifSwapSideband.c
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ipps.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/libraries/vdifio/utils/vdifLinear2circular.c
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ippcore.h>'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/libraries/vdifio/utils/vdifLinear2circular.c
+            regexp: '^#include <ippcore.h>*'
+            line: '#include </opt/intel/oneapi/ipp/2021.8.0/include/ipps.h>'
+            state: present
+
+
+    - name: Install DiFX
+      shell:
+        chdir: /difx/DiFX-2.8.1/
+        executable: /bin/bash
+        cmd: 'source /difx/DiFX-2.8.1/setup.bash && /difx/DiFX-2.8.1/install-difx'
+      register: results
+
+    - debug:
+        msg: 'Installation successful'
+      when: '"-v print version string\nDone!" in results.stdout'
+
+    - name: Adjusting files to run DiFX
+      block:
+        - lineinfile:
+            dest: /usr/local/difx/bin/startdifx
+            line: '# -*- coding: utf-8 -*-'
+            insertafter: '^#!/usr/bin/env python2'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            line: '# -*- coding: utf-8 -*-'
+            insertafter: '^#!/usr/bin/env python2'
+            state: present
+
+        - file:
+            path: /difx/DiFX-2.8.1/local_settings
+            state: touch
+            mode: 0664
+            owner: '{{ user }}'
+            group: '{{ group }}'
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/local_settings
+            line: 'version = 1'
+            state: present
+
+        - lineinfile:
+            dest: /difx/DiFX-2.8.1/local_settings
+            line: '{{ ansible_nodename }}, 2, 8'
+            state: present
+
+        - lineinfile:
+            dest: /etc/environment
+            line: 'DIFX_MACHINES="/difx/DiFX-2.8.1/local_settings"'
+            state: present
+
+        - file:
+            path: /usr/local/bin/runmpifxcorr.DiFX-2.8.1
+            state: touch
+            mode: 0775
+            owner: '{{ user }}'
+            group: '{{ group }}'
+
+        - lineinfile:
+            dest: /usr/local/bin/runmpifxcorr.DiFX-2.8.1
+            line: '#!/bin/bash'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/bin/runmpifxcorr.DiFX-2.8.1
+            line: 'source /difx/DiFX-2.8.1/setup.bash'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/bin/runmpifxcorr.DiFX-2.8.1
+            line: 'mpifxcorr $@'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^    difxinputs.append\(open\(filename\)\)$'
+            line: '    difxinputs.append(open(filename, "rb"))'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^            for j in range\(nchan\[i\]\):$'
+            line: '            for j in range(int(nchan[i])):'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^            for j in range\(nchan\[0\]\):$'
+            line: '            for j in range(int(nchan[0])):'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/diffDiFX.py
+            regexp: '^            buffer = difxinputs\[i\].read\(8[*]nchan\[i\]\)$'
+            line: '            buffer = difxinputs[i].read(8*int(nchan[i]))'
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^\sreturn threads$'
+            line: "            with open(basename + 'machines', 'r') as file:"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^\sreturn threads$'
+            line: "                a = file.readlines().count(node.name+'\\n')"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^\sreturn threads$'
+            line: "            with open(basename + 'machines', 'a') as file_write:"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^\sreturn threads$'
+            line: "                for _ in range(node.threads - a + len(difxmachines.getComputeNodes()) - 1):"
+            state: present
+
+        - lineinfile:
+            dest: /usr/local/difx/bin/genmachines
+            insertbefore: '^\sreturn threads$'
+            line: "                    file_write.write(node.name+'\\n')"
+            state: present

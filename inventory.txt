@@ -2,3 +2,5 @@
 Ubuntu1  ansible_host=172.20.142.170 # ansible_ssh_port=8822
 Ubuntu2  ansible_host=172.20.142.150 ansible_ssh_port=22
 Ubuntu3  ansible_host=172.20.142.172 #ansible_ssh_port=8822
+#Ubuntu4  ansible_host=172.20.142.104 #ansible_ssh_port=8822
+Difx_server1 ansible_host=172.20.142.128 #ansible_ssh_port=8822
