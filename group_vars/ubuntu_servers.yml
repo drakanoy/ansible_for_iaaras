@@ -1,6 +1,6 @@
 ---
 
-ansible_user: kononov
+ansible_user: user1
 ansible_sudo_pass: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           35616634346339376561376534626666653665643164633432653964363835363237383435303061
